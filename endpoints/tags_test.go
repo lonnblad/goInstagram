@@ -1,13 +1,12 @@
 package endpoints
 
 import (
-	"instagram/network"
-	"instagram/structs"
-	"mock"
+	"goInstagram/network"
+	"goInstagram/structs"
 	"testing"
 )
 
-var networkMock mock.Mock
+var networkMock network.NetworkMockIf
 var endpoint *Endpoint
 
 const clientId = "sleepy"
@@ -20,9 +19,9 @@ func init() {
 }
 
 func Test_GetTag_EmptyTag(t *testing.T) {
-	networkMock.InitMock()
+	networkMock.InitMock(t)
 	tag := endpoint.GetTag("")
-	networkMock.ExpectedCallsCalled(t)
+	networkMock.ExpectedCallsCalled()
 	result := structs.Tag{}
 	if !tag.Equal(result) {
 		t.Errorf("mismatch:\n\t[%+v]\n\t[%+v]", tag, result)
@@ -30,58 +29,58 @@ func Test_GetTag_EmptyTag(t *testing.T) {
 }
 
 func Test_GetTag(t *testing.T) {
-	networkMock.InitMock()
-	networkMock.ExpectCall("GetRequest",
-		apiURL+"tags/alten?client_id="+clientId,
-	)
+	networkMock.InitMock(t)
+	arg := apiURL + "tags/alten?client_id=" + clientId
+	ret := []byte{}
+	networkMock.ExpectGetRequestToCall(arg, ret)
 	endpoint.GetTag("alten")
-	networkMock.ExpectedCallsCalled(t)
+	networkMock.ExpectedCallsCalled()
 }
 
 func Test_GetTaggedMedia_EmptyTag(t *testing.T) {
-	networkMock.InitMock()
+	networkMock.InitMock(t)
 	endpoint.GetTaggedMedia("", 0, "", "")
-	networkMock.ExpectedCallsCalled(t)
+	networkMock.ExpectedCallsCalled()
 }
 
 func Test_GetTaggedMedia_Count_1(t *testing.T) {
-	networkMock.InitMock()
-	networkMock.ExpectCall("GetRequest",
-		apiURL+"tags/alten/media/recent?count=1&client_id="+clientId,
-	)
+	networkMock.InitMock(t)
+	arg := apiURL + "tags/alten/media/recent?count=1&client_id=" + clientId
+	ret := []byte{}
+	networkMock.ExpectGetRequestToCall(arg, ret)
 	endpoint.GetTaggedMedia("alten", 1, "", "")
-	networkMock.ExpectedCallsCalled(t)
+	networkMock.ExpectedCallsCalled()
 }
 
 func Test_GetTaggedMedia_Min_TAG_ID_1(t *testing.T) {
-	networkMock.InitMock()
-	networkMock.ExpectCall("GetRequest",
-		apiURL+"tags/alten/media/recent?min_tag_id=1&client_id="+clientId,
-	)
+	networkMock.InitMock(t)
+	arg := apiURL + "tags/alten/media/recent?min_tag_id=1&client_id=" + clientId
+	ret := []byte{}
+	networkMock.ExpectGetRequestToCall(arg, ret)
 	endpoint.GetTaggedMedia("alten", 0, "1", "")
-	networkMock.ExpectedCallsCalled(t)
+	networkMock.ExpectedCallsCalled()
 }
 
 func Test_GetTaggedMedia_Max_TAG_ID_1(t *testing.T) {
-	networkMock.InitMock()
-	networkMock.ExpectCall("GetRequest",
-		apiURL+"tags/alten/media/recent?max_tag_id=1&client_id="+clientId,
-	)
+	networkMock.InitMock(t)
+	arg := apiURL + "tags/alten/media/recent?max_tag_id=1&client_id=" + clientId
+	ret := []byte{}
+	networkMock.ExpectGetRequestToCall(arg, ret)
 	endpoint.GetTaggedMedia("alten", 0, "", "1")
-	networkMock.ExpectedCallsCalled(t)
+	networkMock.ExpectedCallsCalled()
 }
 
 func Test_SearchTags_EmptyTag(t *testing.T) {
-	networkMock.InitMock()
+	networkMock.InitMock(t)
 	endpoint.SearchTag("")
-	networkMock.ExpectedCallsCalled(t)
+	networkMock.ExpectedCallsCalled()
 }
 
 func Test_SearchTags(t *testing.T) {
-	networkMock.InitMock()
-	networkMock.ExpectCall("GetRequest",
-		apiURL+"tags/search?q=alten&client_id="+clientId,
-	)
+	networkMock.InitMock(t)
+	arg := apiURL + "tags/search?q=alten&client_id=" + clientId
+	ret := []byte{}
+	networkMock.ExpectGetRequestToCall(arg, ret)
 	endpoint.SearchTag("alten")
-	networkMock.ExpectedCallsCalled(t)
+	networkMock.ExpectedCallsCalled()
 }

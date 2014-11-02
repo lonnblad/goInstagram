@@ -3,7 +3,7 @@ package endpoints
 import (
 	"encoding/json"
 	"fmt"
-	"instagram/structs"
+	"goInstagram/structs"
 	"log"
 )
 

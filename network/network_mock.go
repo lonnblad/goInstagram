@@ -1,28 +1,50 @@
 package network
 
 import (
-	"mock"
 	"testing"
 )
 
+type NetworkMockIf interface {
+	InitMock(t *testing.T)
+	ExpectGetRequestToCall(string, []byte)
+	ExpectedCallsCalled()
+}
+
 type NetworkMock struct {
-	mockHelper *mock.MockHelper
+	t             *testing.T
+	expectedCalls []getRequestCall
+}
+
+type getRequestCall struct {
+	called  bool
+	arg     string
+	returns []byte
 }
 
 func (n *NetworkMock) GetRequest(url string) []byte {
-	n.mockHelper.AddCall("GetRequest", url)
+	for i, elem := range n.expectedCalls {
+		if !elem.called && elem.arg == url {
+			elem.called = true
+			n.expectedCalls[i] = elem
+			return elem.returns
+		}
+	}
+	n.t.Fatalf("Unexpected GetRequest was called with: [%s]", url)
 	return []byte{}
 }
 
-func (n *NetworkMock) InitMock() {
-	n.mockHelper = &mock.MockHelper{}
-	n.mockHelper.InitMock()
+func (n *NetworkMock) InitMock(t *testing.T) {
+	n.t = t
 }
 
-func (n *NetworkMock) ExpectCall(funcName string, args ...interface{}) {
-	n.mockHelper.ExpectCall(funcName, args)
+func (n *NetworkMock) ExpectGetRequestToCall(arg string, ret []byte) {
+	n.expectedCalls = append(n.expectedCalls, getRequestCall{false, arg, ret})
 }
 
-func (n *NetworkMock) ExpectedCallsCalled(t *testing.T) {
-	n.mockHelper.ExpectedCallsCalled(t)
+func (n *NetworkMock) ExpectedCallsCalled() {
+	for _, elem := range n.expectedCalls {
+		if !elem.called {
+			n.t.Fatalf("Expected GetRequest was not called")
+		}
+	}
 }

@@ -1,8 +1,8 @@
 package endpoints
 
 import (
-	"instagram/network"
-	"instagram/structs"
+	"goInstagram/network"
+	"goInstagram/structs"
 )
 
 type Instagram interface {
